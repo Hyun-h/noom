@@ -17,13 +17,17 @@ const handleListen = () => console.log(`Listening on http://localhost:3000`);
 const server = http.createServer(app);
 const wss = new WebSocket.Server({ server });
 
+const sockets = [];
+
 wss.on("connection", (socket) => {
+  sockets.push(socket);
   console.log("Connected to Browser!");
   socket.on("close", () => console.log("Disconnected from the Browser"));
   socket.on("message", (message) => {
-    console.log(message);
+    //console에서 message가 buffer가 뜰 경우 .toString("utf-8") 꼭 넣어줄 것
+    console.log(message.toString("utf-8"));
+    socket.forEach((aSocket) => aSocket.send(message.toString("utf-8")));
   });
-  socket.send("hello!!!");
 });
 
 server.listen(3000, handleListen);
